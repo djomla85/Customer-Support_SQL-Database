@@ -1,4 +1,9 @@
-script za Korisnicka_podrska:
+/*
+Creating a database Customer support 
+
+with simulating the data required for inserting into the tables and making reports
+
+*/
 
 
 SHOW databases;
@@ -126,7 +131,7 @@ SELECT * FROM Claims;
 
 /*QUERIES BLOCK*/
 
--- 1. Izbaci ime korisnika koji je kupio paket / ugovor "Omorika"
+-- 1. Extract customer name who purchases the package "Omorika"
 SELECT 
     c.customername, c.city , contractdate
 FROM
@@ -136,7 +141,7 @@ FROM
 WHERE
     cn.contractname = 'Omorika';
     
--- 2. izbaci sve ordere iz 2023 god gde je korisnik iz Novog Sada
+-- 2. Extract all purchase orders from 2023 where customer is from Novi Sad
 SELECT 
     o.orderid, c.customername, c.city
 FROM
@@ -147,7 +152,7 @@ WHERE
     c.city = 'Novi Sad'
         AND orderdate BETWEEN '2023-01-01' AND '2023-12-31';
         
--- 3. izbaci sve ordere iz 2022 god gde je korisnik iz Sarajeva
+-- 3. Extract all purchase orders and customers from 2022 where customer is from Sarajevo
 SELECT 
     o.orderid, c.customername, c.city
 FROM
@@ -158,7 +163,7 @@ WHERE
     c.city = 'Sarajevo'
         AND orderdate BETWEEN '2022-01-01' AND '2022-12-31';
        
--- 4.primer sa inner/nested join:  izbaci sve korisnike kojima ugovor istice posle 12 meseci 
+-- 4.  inner/nested join:  Extract all customers with contracts which exire in 12 months  
 SELECT 
     c.customername, c.contractdate, cn.contractid, cn.contractname
 FROM
@@ -173,7 +178,7 @@ WHERE
         WHERE
             contractlength = '12 months');
 
--- 5.primer sa inner/nested join:  izbaci sve korisnike koji nemaju reklamacije  
+-- 5. inner/nested join:  extract allcustoemr without submitted claims  
 
 SELECT 
     cl.claimID, c.customername
@@ -184,7 +189,7 @@ FROM
 WHERE
     claimcases IS NULL;
     
--- 5.primer sa inner/nested join:  izbaci sve korisnike koji imaju vise od 5 reklamacija  
+-- 6.inner/nested join:  extract all custoemrs with more than 5 claims   
 
 SELECT 
     cl.claimID, c.customername
@@ -196,7 +201,8 @@ WHERE
     claimcases  > 5;
     
     
--- 6. izabaciti sve korisnike koji se zale na nedovoljan signal i navesti naziv operatera u opadajucem redoseldu      
+-- 6. extract all customers with claim on insufficient signal and name the supplier name in descending order 
+      
     SELECT 
     c.customername, contractid, DescriptionNote, s.suppliername
 FROM
@@ -211,7 +217,7 @@ WHERE
     DescriptionNote LIKE '%jacina signala'
 ORDER BY suppliername DESC;
     
--- 7 . izbaciti korisnika sa najvecom narudzbenicom kod operatera MTS 
+-- 7 . extract customers and the gratest order amount by service provider "MTS" 
     SELECT 
     MAX(ordervalue), c.customerid, s.suppliername
 FROM
@@ -226,7 +232,7 @@ GROUP BY suppliername
 ORDER BY suppliername DESC;
 
 
--- 8 . izbaciti korisnika sa najmanjom narudzbenicom kod operatera A1 
+-- 8 . extract customers and the lowest order amount by service provider "A1" 
     SELECT 
     MIN(ordervalue), c.customerid, s.suppliername
 FROM
@@ -241,7 +247,7 @@ GROUP BY suppliername
 ORDER BY suppliername ASC;
 
 
--- 9 . grupisati sve naloge po operaterima i sortirati u opadajucem tj rastucem redoseldu 
+-- 9. group by all the orders based on suppliers and sort in descending / adscending order  
 
     SELECT 
     COUNT(orderid) AS broj_naloga_po_operateru, 
@@ -259,9 +265,9 @@ FROM
 GROUP BY suppliername
 ORDER BY suppliername ASC;
 
--- 10 . grupisati sve naloge po operaterima i sortirati u rastucem redoseldu
--- a) bez vremenskih okvira
--- b) u toku 2022 god. 
+-- 10. grouping all the orders based on suppliers and sort in ascending order
+-- a) with no time limitations
+-- b) for the orders in frame of 2022 
 
 -- a)
    SELECT 
@@ -288,4 +294,3 @@ WHERE
     o.orderdate BETWEEN '2022-01-01' AND '2022-12-31'
 GROUP BY suppliername
 ORDER BY zbir_naloga_po_operateru DESC;
-
